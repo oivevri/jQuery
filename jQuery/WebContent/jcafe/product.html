@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>product.html</title>
+<style>
+td {
+	padding: 10px;
+}
+
+.td {
+	text-align: center;
+	background-color: lightblue;
+}
+</style>
+<script src="../js/jquery-3.5.1.min.js"></script>
+<script>
+		$(document).ready(function() {
+			// 데이터 조회한 결과를 화면에 table로 보여주도록 하자
+			$.ajax({
+				url: '../GetProductListServlet', // 전체 데이터를 조회해서 결과를 json 파일로 만들어지는게 서블릿(웹페이지)
+				dataType: 'json', // js가 알아서 json타입을 object 타입으로 바꿔줌..? 이게뭔말이야.. 여튼 콘솔창에 배열로 띄우게 해줌
+				success: function(result) {
+//					console.log(result);
+//					let data = JSON.parse(result); // 위에 옵션으로 dataType 안적어주면 여기서 json을 object 타입으로 파싱해줘야함
+//					console.log(data); // 콘솔창에도 이렇게 data를 출력하도록 적어줘야하고
+
+					// 화면에 보여주도록 하자
+					let fields = ['item_no', 'item', 'price', 'content', 'image'];
+					let data = result;
+					let table = $('<table />').attr({'id':'tbl','border':'1', 'style':'border-collapse: collapse'});
+					let tr = $('<tr />');
+					
+	// 테이블 헤더				
+                    for (let title of fields) {
+                    	tr.append($('<th />').html(title));
+                    }
+					table.append(tr);
+					
+	// 테이블 본문 : 데이터영역
+					$(data).each(function (idx, obj) {
+						tr = $('<tr />'); // 새로 tr을 정의해줘야함.. 이거 안하면 한 tr에 몽땅뜸
+	// 위에 테이블헤더인 fields의 배열만큼 데이터받아오는거
+						for (field of fields) { 
+							if(field == 'item_no'){
+								tr.append($('<td />').html(
+										$('<a />').attr('href', 'item.jsp?itemNo=' + obj.item_no)
+										.html(obj[field])) // html 닫고
+								); // append 닫음
+								// 'item.jsp' 대신에 obj.link 적어도 된다..???
+							} else {
+								tr.append($('<td />').html(obj[field]));
+							}
+						}
+						
+	//					for (field in obj) { // data의 object들을 필드에 넣고, 그게 들어가있는 갯수만큼 루핑
+	//					tr.append($('<td />').html(obj[field]));
+	//				}
+
+						table.append(tr);
+					});
+					
+					$('#showResult').append(table);
+				},
+				error: function(result) {
+					console.log(result);
+				}
+				
+			});
+			$('#save').on('click', function(event) {
+				event.preventDefault(); // id값이 save인 버튼이 submit 되는 이벤트를 잠시 멈춤
+				$.ajax({
+					url: $('#frm').attr('action'),
+					type: 'post',
+					data: $('#frm').serialize(), // frm 안의 name 필드들(key)이 키-밸류 형식으로 넘어옴
+					success: function(a, b) {
+						alert('OK');
+						addRow(); // 행 붙여주기
+					},
+					error: function(a, b) {
+						
+					}
+				});
+
+			});
+		});
+		
+		function file_open() {  // 파일찾기 창 띄우는 펑션
+			window.open("upload.jsp", "upload", "width=300 height=200 left=300 top=30");
+		}
+		
+		function addRow() { // 추가 입력된 행
+			let tr = $('<tr />');
+			tr.append($('<td />').html(
+					$('<a />').attr('href', 'item.jsp?itemNo=' + $('input[name="itemNo"]').val())
+					.html($('input[name="itemNo"]').val())) // html 닫고
+			);
+			
+			tr.append($('<td />').html($('input[name="item"]').val()),
+					$('<td />').html($('input[name="price"]').val()),
+					$('<td />').html($('input[name="content"]').val()),
+					$('<td />').html($('input[name="image"]').val())
+					);
+			$('#tbl').append(tr);
+		}
+	</script>
+</head>
+<body>
+	<form id="frm" method="post" action="../PostProductServlet">
+		<table border="1" style="border-collapse: collapse;">
+			<tr>
+				<td class="td">Item No</td>
+				<td><input type="text" name="itemNo" value="bean_005"></td>
+			</tr>
+			<tr>
+				<td class="td">Item</td>
+				<td><input type="text" name="item" value="과테말라 원두2"></td>
+			</tr>
+			<tr>
+				<td class="td">Category</td>
+				<td><input type="text" name="category" value="bean"></td>
+			</tr>
+			<tr>
+				<td class="td">Price</td>
+				<td><input type="text" name="price" value="4300"></td>
+			</tr>
+			<tr>
+				<td class="td">Content</td>
+				<td><input type="text" name="content" value="과테말라 안티구아 원두입니다."></td>
+			</tr>
+			<tr>
+				<td class="td">Like it</td>
+				<td><input type="text" name="likeIt" value="4.5"></td>
+			</tr>
+			<tr>
+				<td class="td">Image</td>
+				<td><input type="text" name="image"> <input
+					type="button" value="파일첨부" onclick="file_open()"></td>
+			</tr>
+			<tr align="center">
+				<td colspan="2">
+					<button id="save">SAVE</button>
+					<button id="cancel">CANCEL</button>
+				</td>
+			</tr>
+		</table>
+	</form>
+
+	<div style="height: 20px;"></div>
+
+	<div id="showResult"></div>
+</body>
+</html>
