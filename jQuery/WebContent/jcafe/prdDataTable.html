@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>prdDataTable.html</title>
+<style>
+td {
+	padding: 10px;
+}
+
+.td {
+	text-align: center;
+	background-color: lightblue;
+}
+</style>
+<script src="../js/jquery-3.5.1.min.js"></script>
+<link rel="stylesheet"
+	href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+<script>
+	$(document).ready(function() {
+		let table = $('#example').DataTable({
+			"ajax" : '../GetProductDataTable', // 우리가 요청하는 웹 서블릿 주소 적어주면됨?
+			// 가지고올 칼럼에대해 지정.. 근데 GetProductDataTable 에서 쓴거처럼 [{'data': '~',..}] 이런형식
+			columns : [ {
+				'data' : 'itemNo'
+			}, {
+				'data' : 'item'
+			}, {
+				'data' : 'category'
+			}, {
+				'data' : 'price'
+			}, {
+				'data' : 'content'
+			}, {
+				'data' : 'image'
+			} ]
+		});
+		$('#example tbody').on('click', 'td', function () { // tbody영역중에 tr태그 영역에 클릭이벤트가 발생하면 펑션을 실행시켜라
+			let data = table.row(this).data(); // dataTable의 이 행의 데이터를 가져와서 data로 삼자
+			// console.log(data);
+			// console.log($(this)); // 페이지 넘어가는거 잠깐 주석처리하고 this 정보에서 cellIndex를 보면.. 근데 난 왜 이게안뜨지..
+			
+			let elem = $(this); // ajax에서 this 호출하면 이상하게 되어서(window object가 됨) 미리 여기서 변수선언해주자
+			
+			if (this.cellIndex == 0) { // itemNo를 클릭하면
+				location.href = data.link + "?itemNo=" + data.itemNo; // td영역 클릭할때마다 해당페이지(itemNo로 찾은 그 페이지) 열어줌
+			} else { // 그 외의 영역을 클릭하면 삭제
+// 데이터베이스 삭제 후 화면에서 지우기
+		// DAO에서 itemNo 기준으로 db삭제하는 서블릿				
+				$.ajax({
+					url: '../DeleteProductServlet',
+					type: 'post',
+					data: {
+						itemNo: data.itemNo
+					},
+					success: function() { // 화면에서 지우기(삭제)
+					// 이때 elem은 위에서선언한 this고, 클릭된 td를 의미한다
+						$(elem).parent().addClass('selected'); // 선택한 것(td)의 부모(행 tr)에 클래스이름 부여해서
+						table.row('.selected').remove().draw(false); // 테이블에서 클래스이름이 selected인 테이블의 행을 가져와서 삭제
+						// draw() 는 dataTable에서 제공해주는 메소드.. -> 화면에서 삭제해주는것임
+						
+					},
+					error: function(a, b) {
+						console.log(">>> error");
+						console.log("-------------------------------------------");
+						console.log(a, b);
+					}
+				});
+
+				alert("DELETE"); // 알람
+			}
+			
+		});
+	});
+</script>
+</head>
+<body>
+	<table id="example" class="display" style="width: 100%">
+		<thead>
+			<tr>
+				<th>ItemNo</th>
+				<th>Item</th>
+				<th>Category</th>
+				<th>Price</th>
+				<th>Content</th>
+				<th>Image</th>
+			</tr>
+		</thead>
+		<tfoot>
+			<tr>
+				<th>ItemNo</th>
+				<th>Item</th>
+				<th>Category</th>
+				<th>Price</th>
+				<th>Content</th>
+				<th>Image</th>
+			</tr>
+		</tfoot>
+	</table>
+	<div style="height: 20px;"></div>
+
+</body>
+</html>

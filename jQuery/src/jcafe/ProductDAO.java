@@ -51,7 +51,7 @@ public class ProductDAO {
 		return list; // 리스트를 리턴
 	}
 
-	// 한건 조회하는 기능 // 검색기능
+	// 한건 조회하는 기능 // 검색기능 -> 그래서 조회된 값을 리턴해주는거
 	public ProductVO getProduct(String itemNo) {
 		String sql = "select * from product where item_no = ?";
 		ProductVO vo = new ProductVO(); // 이거 if문안에있으면 그 사라지니까.. 리턴값으로 만들기위해 밖으로 뺀것
@@ -112,5 +112,24 @@ public class ProductDAO {
 			}
 		}
 		
+	}
+	// 삭제하는 기능 -> 그래서 얘는 리턴값 없는 void임 그래서 서블릿에서도 vo에 어쩌고 X인거
+	public void deleteProduct(String itemNo) {
+		String sql = "delete from product where item_no = ?";
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1,  itemNo);
+			
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }
