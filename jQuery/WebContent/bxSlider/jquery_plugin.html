@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jquery_plugin.html</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.min.js"></script>
+    <style>
+        .gallery_wrap {
+            padding-left: 25%;
+            padding-right: 25%;
+            padding-top: 30px;
+        }
+
+        .slide_gallery img {
+            width: 400px;
+            height: 300px;
+            margin: auto; /* 가운데정렬 */
+        }
+    </style>
+    <script>
+        $(() => {
+            $('.slide_gallery').bxSlider({
+                auto: true, // 슬라이드의 자동전환여부
+                autoControls: true, // 이전/다음버튼의 노출여부
+                stopAutoOnClick: true, // 클릭으로 멈추기
+                pager: true, // 현재위치를 알리는 불릿 노출여부
+                captions: true // 아래 img 태그에 넣은 title 속성에 적힌값이 캡션으로 뜸
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div class="gallery_wrap">
+        <div class="slide_gallery">
+            <li>
+                <img src="../images/pic_1.jpg" alt="사진1" title="사진1입니다">
+            </li>
+            <li>
+                <img src="../images/pic_2.jpg" alt="사진2">
+            </li>
+            <li>
+                <img src="../images/pic_3.jpg" alt="사진3">
+            </li>
+            <li>
+                <img src="../images/pic_4.jpg" alt="사진4">
+            </li>
+            <li>
+                <img src="../images/pic_5.jpg" alt="사진5">
+            </li>
+            <li>
+                <img src="../images/pic_6.jpg" alt="사진6">
+            </li>
+            <li>
+                <img src="../images/pic_7.jpg" alt="사진7">
+            </li>
+            <li>
+                <img src="../images/pic_8.jpg" alt="사진8">
+            </li>
+            <li>
+                <img src="../images/pic_9.jpg" alt="사진9">
+            </li>
+        </div>
+    </div>
+</body>
+
+</html>
