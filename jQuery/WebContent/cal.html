@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cal.html</title>
+    <style>
+        .redCol {
+            background-color: palevioletred;
+            color: white;
+        }
+
+        .blueCol {
+            background-color: royalblue;
+            color: white;
+        }
+
+        .blank {
+            background-color: lightgray;
+        }
+
+        table {
+            text-align: center;
+        }
+
+        .cursorON:hover {
+            background-color: mediumpurple;
+            color: white;
+        }
+
+        #dd {
+            text-align: right;
+        }
+
+        #content {
+            width: 140px;
+            height: 80px;
+        }
+    </style>
+    <script src="js/jquery-3.5.1.min.js"></script>
+    <script>
+        $(() => {
+            let selYear = $('select[name="year"] :selected').val();
+            let selMonth = $('select[name="month"] :selected').val();
+
+            $('select').on('change', function () {
+                $('#main').remove();
+                let selYear = $('select[name="year"] :selected').val();
+                let selMonth = $('select[name="month"] :selected').val();
+                console.log(selYear + "년 " + selMonth + "월");
+                createCal(parseInt(selYear), parseInt(selMonth) - 1); // 2. 위에 select값 바뀔때마다 뜨는거
+                // 3. 그리고 밑에 select 에서 설정한 value가 String으로 인식되어서 여기서 파싱해줘야함
+            });
+
+            createCal(parseInt(selYear), parseInt(selMonth) - 1); // 1. 처음 화면 로딩됐을때 바로뜨는거      
+
+            let cal = document.getElementById('cal');
+
+            $('#cal').on('click','.cursorON' ,function (arg) {
+                let msg = prompt('일정 등록');
+                let obj = $(this);
+                addContent(obj, msg);
+            })
+        });
+// 일정 추가 펑션
+        function addContent(obj, msg) { // obj : td, msg : 기입한 메세지
+            console.log(obj, msg)
+            $(obj).children().eq(1).html(msg); // 선택한 td(obj)의 두번째 자식에 html값으로 msg를 넣어준다
+            // 이때 일정이 더들어가면 옆에 붙는데.. msg + '<br>' 하면 덮어씌워지고..어쩌냐..
+        }
+
+// 골라진 연, 월별 달력 만드는 펑션
+        function createCal(year, month) { // 3. 여기서 매개값 설정해줘야함
+            let today = new Date();
+            console.log(year, month); // 연월은 위에서 select로 지정해줬으니 여기선 따로X
+            let todate = today.getDate();
+            let starday = new Date(year, month, 1).getDay(); // 요일이라서 Day
+            let lastday = new Date(year, month + 1, 0).getDate(); // 날짜라서 Date
+            // console.log(starday);
+            // console.log(lastday);
+
+            let cnt = 0;
+
+            let week = ['일', '월', '화', '수', '목', '금', '토'];
+
+            let tag = "<table border='1' id='main'><tr>";
+            week.forEach(function (a, b, c) { // 요일
+                if (b == 6) {
+                    tag += "<td class='blueCol'>" + a + "</td>";
+                } else if (b) {
+                    tag += "<td>" + a + "</td>";
+                } else {
+                    tag += "<td class='redCol'>" + a + "</td>";
+                }
+            });
+            tag += "</tr><tr>";
+
+            for (let j = 0; j < starday; j++) { // 빈칸
+                cnt++;
+                tag += "<td class='blank'></td>";
+
+            }
+
+            for (let i = 1; i <= lastday; i++) { // 날짜
+                cnt++;
+                if (cnt % 7 == 1) { // 일요일
+                    tag += "</tr><tr><td class='cursorON' style='color: palevioletred'><div id='dd'>" + i +
+                        "</div><div id='content'></div></td>";
+                } else if (cnt % 7 == 0) { // 토요일
+                    tag += "<td class='cursorON' style='color: royalblue'><div id='dd'>" + i +
+                        "</div><div id='content'></div></td>";
+                } else {
+                    tag += "<td class='cursorON'><div id='dd'>" + i + "</div><div id='content'></div></td>";
+                }
+            }
+            tag += "</tr></table>"
+
+            $('#cal').append(tag);
+        }
+    </script>
+</head>
+
+<body>
+    년, 월을 선택하세요
+    <select name="year" id="year">
+        <option value="2019">2019년</option>
+        <option value="2020" selected>2020년</option>
+        <option value="2021">2021년</option>
+    </select>
+    <select name="month" id="month">
+        <option value="1">1월</option>
+        <option value="2">2월</option>
+        <option value="3">3월</option>
+        <option value="4">4월</option>
+        <option value="5">5월</option>
+        <option value="6">6월</option>
+        <option value="7">7월</option>
+        <option value="8">8월</option>
+        <option value="9">9월</option>
+        <option value="10" selected>10월</option>
+        <option value="11">11월</option>
+        <option value="12">12월</option>
+    </select>
+    <p />
+    <table id="cal" border="1" style="border-collapse: collapse;"></table>
+    <p />
+
+</body>
+
+</html>
